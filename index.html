@@ -436,16 +436,37 @@ async function buscarUbicacion() {
 
     map.setView([latitud, longitud], 16);
 
-    L.circleMarker([latitud, longitud], {
-  radius: 9,
-  color: '#FFFFFF',
-  weight: 3,
-  fillColor: '#FF762E',
-  fillOpacity: 1
-})
-.addTo(map)
-.bindPopup('<b>' + lugar.display_name + '</b>')
-.openPopup();
+    const iconoRoller = L.divIcon({
+  className: '',
+  html: `
+    <div style="width:48px;height:48px;filter:drop-shadow(0 2px 3px #333);">
+      <svg viewBox="0 0 48 48" width="48" height="48">
+        <path d="M8 10 L27 12 L36 23 L39 28 L34 31 L12 27 L7 20 Z"
+          fill="#FF762E" stroke="#FFFFFF" stroke-width="2"
+          stroke-linejoin="round"/>
+        <path d="M9 10 L27 12" stroke="#FFFFFF"
+          stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 29 L39 33" stroke="#FFFFFF"
+          stroke-width="3" stroke-linecap="round"/>
+        <circle cx="14" cy="36" r="3.5" fill="#FF762E"
+          stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="23" cy="37" r="3.5" fill="#FF762E"
+          stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="32" cy="37" r="3.5" fill="#FF762E"
+          stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="40" cy="37" r="3.5" fill="#FF762E"
+          stroke="#FFFFFF" stroke-width="1.5"/>
+      </svg>
+    </div>
+  `,
+  iconSize: [48, 48],
+  iconAnchor: [24, 38]
+});
+
+L.marker([latitud, longitud], { icon: iconoRoller })
+  .addTo(map)
+  .bindPopup('<b>' + lugar.display_name + '</b>')
+  .openPopup();
 
     mensaje.textContent = 'Ubicación encontrada correctamente.';
 
