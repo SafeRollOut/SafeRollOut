@@ -336,5 +336,24 @@
 
 </script>
 <script src="./supabase-config.js"></script>
+  <script>
+async function probarBaseDeDatos() {
+
+  const { data, error } = await window.supabaseClient
+    .from('street_segments')
+    .select('id')
+    .limit(1);
+
+  if (error) {
+    console.error('Error al consultar SafeRollOut:', error);
+    return;
+  }
+
+  console.log('¡Conexión con la base de datos confirmada!');
+  console.log('Registros encontrados:', data.length);
+}
+
+probarBaseDeDatos();
+</script>
 </body>
 </html>
