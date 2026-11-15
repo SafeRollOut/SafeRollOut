@@ -167,8 +167,45 @@
       color: var(--gray);
       font-size: 12px;
     }
+.search-box {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  background: #1C2933;
+}
 
-    @media(max-width: 700px) {
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #46545F;
+  background: #101820;
+  color: white;
+  font-size: 14px;
+}
+
+.search-box input::placeholder {
+  color: #9BA6AF;
+}
+
+.search-box button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #FF762E;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#searchMessage {
+  padding: 0 15px 12px;
+  background: #1C2933;
+  color: #9BA6AF;
+  font-size: 13px;
+}
+@media(max-width: 700px) {
       .actions {
         grid-template-columns: 1fr;
       }
@@ -212,11 +249,25 @@
   <section class="map-container">
 
     <div class="map-header">
-      <h2>Mapa colaborativo AMBA</h2>
-      <span>● Mapa cartográfico activo</span>
-    </div>
+  <h2>Mapa colaborativo AMBA</h2>
+  <span>● Mapa cartográfico activo</span>
+</div>
 
-    <div id="map"></div>
+<div class="search-box">
+  <input
+    type="text"
+    id="streetSearch"
+    placeholder="Buscar calle, localidad o dirección..."
+  >
+
+  <button onclick="buscarUbicacion()">
+    BUSCAR
+  </button>
+</div>
+
+<div id="searchMessage"></div>
+
+<div id="map"></div>
 
     <div class="notice">
       Mapa base de OpenStreetMap.
@@ -354,6 +405,49 @@ async function probarBaseDeDatos() {
 }
 
 probarBaseDeDatos();
+// BUSCADOR DE CALLES Y LOCALIDADES
+async function buscarUbicacion() {
+
+  const consulta = document.getElementById('streetSearch').value.trim();
+  const mensaje = document.getElementById('searchMessage');
+
+  if (!consulta) {
+    mensaje.textContent = 'Escribí una calle o localidad para buscar.';
+    return;
+  }
+
+  mensaje.textContent = 'Buscando ubicación...';
+
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&q='
+      + encodeURIComponent(consulta);
+
+    const respuesta = await fetch(url);
+    const resultados = await respuesta.json();
+
+    if (resultados.length === 0) {
+      mensaje.textContent = 'No encontramos esa ubicación.';
+      return;
+    }
+
+    const lugar = resultados[0];
+    const latitud = Number(lugar.lat);
+    const longitud = Number(lugar.lon);
+
+    map.setView([latitud, longitud], 16);
+
+    L.marker([latitud, longitud])
+      .addTo(map)
+      .bindPopup('<b>' + lugar.display_name + '</b>')
+      .openPopup();
+
+    mensaje.textContent = 'Ubicación encontrada correctamente.';
+
+  } catch (error) {
+    console.error('Error en la búsqueda:', error);
+    mensaje.textContent = 'No se pudo realizar la búsqueda. Intentá nuevamente.';
+  }
+}
 </script>
 </body>
 </html>
