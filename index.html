@@ -436,10 +436,16 @@ async function buscarUbicacion() {
 
     map.setView([latitud, longitud], 16);
 
-    L.marker([latitud, longitud])
-      .addTo(map)
-      .bindPopup('<b>' + lugar.display_name + '</b>')
-      .openPopup();
+    L.circleMarker([latitud, longitud], {
+  radius: 9,
+  color: '#FFFFFF',
+  weight: 3,
+  fillColor: '#FF762E',
+  fillOpacity: 1
+})
+.addTo(map)
+.bindPopup('<b>' + lugar.display_name + '</b>')
+.openPopup();
 
     mensaje.textContent = 'Ubicación encontrada correctamente.';
 
