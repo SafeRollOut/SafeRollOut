@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101820">
+
+  <title>SafeRollOut | Rodá seguro. Explorá libre.</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    :root {
+      --dark: #101820;
+      --orange: #FF762E;
+      --green: #16A36A;
+      --white: #F5F6F7;
+      --gray: #9BA6AF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 18px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #29343D;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .slogan {
+      color: var(--gray);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .badge {
+      background: var(--green);
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 30px 6%;
+      max-width: 1450px;
+      margin: auto;
+    }
+
+    .welcome {
+      margin-bottom: 24px;
+    }
+
+    .welcome h1 {
+      font-size: clamp(25px, 4vw, 38px);
+      margin-bottom: 10px;
+    }
+
+    .welcome h1 span {
+      color: var(--orange);
+    }
+
+    .welcome p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .map-container {
+      background: #1C2933;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #34434F;
+    }
+
+    .map-header {
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .map-header h2 {
+      font-size: 18px;
+    }
+
+    .map-header span {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    #map {
+      width: 100%;
+      height: 540px;
+      background: #26333D;
+    }
+
+    .notice {
+      padding: 15px;
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .card {
+      background: #1C2933;
+      padding: 22px;
+      border-radius: 13px;
+      border: 1px solid #34434F;
+    }
+
+    .card h3 {
+      margin-bottom: 9px;
+      font-size: 17px;
+    }
+
+    .card p {
+      color: var(--gray);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .card button {
+      margin-top: 16px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 7px;
+      background: var(--orange);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 15px;
+      color: var(--gray);
+      font-size: 12px;
+    }
+
+    @media(max-width: 700px) {
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      #map {
+        height: 430px;
+      }
+
+      header {
+        padding: 16px 5%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="brand">Safe<span>RollOut</span></div>
+    <div class="slogan">Rodá seguro. Explorá libre.</div>
+  </div>
+
+  <div class="badge">COMUNIDAD ROLLER</div>
+</header>
+
+<main>
+
+  <section class="welcome">
+    <h1>Explorá tu ciudad.<br>
+      <span>Rodá con seguridad.</span>
+    </h1>
+
+    <p>
+      Un mapa colaborativo para descubrir calles,
+      compartir recorridos y conocer las condiciones
+      del camino antes de salir a patinar.
+    </p>
+  </section>
+
+  <section class="map-container">
+
+    <div class="map-header">
+      <h2>Mapa colaborativo AMBA</h2>
+      <span>● Mapa cartográfico activo</span>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="notice">
+      Mapa base de OpenStreetMap.
+      Las calles todavía no cuentan con evaluaciones
+      comunitarias verificadas. Las zonas de inicio
+      indican áreas de interés, no calles relevadas.
+    </div>
+
+  </section>
+
+  <section class="actions">
+
+    <div class="card">
+      <h3>🛼 Explorar</h3>
+      <p>Consultá el mapa y descubrí nuevas zonas para patinar.</p>
+      <button onclick="showMessage('La exploración está disponible. Las evaluaciones se incorporarán próximamente.')">
+        Explorar
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>⭐ Calificar</h3>
+      <p>Compartí tu experiencia sobre el estado del pavimento.</p>
+      <button onclick="showMessage('Próximamente podrás registrarte y calificar calles.')">
+        Calificar
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>⚠️ Reportar</h3>
+      <p>Informá pozos, obstáculos y situaciones peligrosas.</p>
+      <button onclick="showMessage('Próximamente podrás enviar reportes a la comunidad.')">
+        Reportar
+      </button>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  SafeRollOut © 2026 · Rodá seguro. Explorá libre.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+  // MAPA INICIAL: SAN MIGUEL, BUENOS AIRES
+
+  const map = L.map('map').setView(
+    [-34.543, -58.712],
+    12
+  );
+
+  L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    }
+  ).addTo(map);
+
+  // ZONAS DE INTERÉS INICIAL
+
+  const zones = [
+    {
+      name: 'San Miguel',
+      lat: -34.543,
+      lon: -58.712
+    },
+    {
+      name: 'Muñiz',
+      lat: -34.552,
+      lon: -58.698
+    },
+    {
+      name: 'Bella Vista',
+      lat: -34.566,
+      lon: -58.690
+    },
+    {
+      name: 'José C. Paz',
+      lat: -34.515,
+      lon: -58.768
+    },
+    {
+      name: 'Malvinas Argentinas',
+      lat: -34.500,
+      lon: -58.700
+    }
+  ];
+
+  zones.forEach(zone => {
+
+    L.circleMarker(
+      [zone.lat, zone.lon],
+      {
+        radius: 7,
+        color: '#FF762E',
+        fillColor: '#FF762E',
+        fillOpacity: 0.9
+      }
+    )
+    .addTo(map)
+    .bindPopup(
+      '<b>' + zone.name + '</b><br>' +
+      'Zona de interés inicial.<br>' +
+      'Sin evaluaciones comunitarias.'
+    );
+
+  });
+
+  function showMessage(message) {
+    alert(message);
+  }
+
+</script>
+
+</body>
+</html>
