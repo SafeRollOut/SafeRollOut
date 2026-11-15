@@ -439,28 +439,43 @@ async function buscarUbicacion() {
     const iconoRoller = L.divIcon({
   className: '',
   html: `
-    <div style="width:48px;height:48px;filter:drop-shadow(0 2px 3px #333);">
-      <svg viewBox="0 0 48 48" width="48" height="48">
-        <path d="M8 10 L27 12 L36 23 L39 28 L34 31 L12 27 L7 20 Z"
-          fill="#FF762E" stroke="#FFFFFF" stroke-width="2"
-          stroke-linejoin="round"/>
-        <path d="M9 10 L27 12" stroke="#FFFFFF"
-          stroke-width="2" stroke-linecap="round"/>
-        <path d="M12 29 L39 33" stroke="#FFFFFF"
-          stroke-width="3" stroke-linecap="round"/>
-        <circle cx="14" cy="36" r="3.5" fill="#FF762E"
-          stroke="#FFFFFF" stroke-width="1.5"/>
-        <circle cx="23" cy="37" r="3.5" fill="#FF762E"
-          stroke="#FFFFFF" stroke-width="1.5"/>
-        <circle cx="32" cy="37" r="3.5" fill="#FF762E"
-          stroke="#FFFFFF" stroke-width="1.5"/>
-        <circle cx="40" cy="37" r="3.5" fill="#FF762E"
-          stroke="#FFFFFF" stroke-width="1.5"/>
-      </svg>
-    </div>
+    <svg viewBox="0 0 64 64" width="56" height="56"
+         xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Bota negra con contorno naranja -->
+      <path d="M15 7 L29 7 L32 21
+               L47 27 Q53 29 52 36
+               L13 36 Q8 35 9 29
+               L12 21 Z"
+            fill="#101820"
+            stroke="#FF762E"
+            stroke-width="3"
+            stroke-linejoin="round"/>
+
+      <!-- Lengüeta y detalles -->
+      <path d="M17 10 L25 10 L27 22"
+            fill="none"
+            stroke="#FF762E"
+            stroke-width="2.5"
+            stroke-linecap="round"/>
+
+      <!-- Base del patín -->
+      <path d="M10 37 L54 37"
+            stroke="#101820"
+            stroke-width="5"
+            stroke-linecap="round"/>
+
+      <!-- Cuatro ruedas en línea -->
+      <g fill="#FFFFFF" stroke="#101820" stroke-width="2.5">
+        <circle cx="14" cy="46" r="5"/>
+        <circle cx="25" cy="46" r="5"/>
+        <circle cx="36" cy="46" r="5"/>
+        <circle cx="47" cy="46" r="5"/>
+      </g>
+    </svg>
   `,
-  iconSize: [48, 48],
-  iconAnchor: [24, 38]
+  iconSize: [56, 56],
+  iconAnchor: [28, 46]
 });
 
 L.marker([latitud, longitud], { icon: iconoRoller })
