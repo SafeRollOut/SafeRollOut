@@ -341,7 +341,49 @@
   </div>
 </div>
 <div id="map"></div>
+<div id="formularioManual" class="form-panel" style="display:none;">
 
+  <h2>🛼 Informar una calle</h2>
+  <p>Compartí tu experiencia para ayudar a otros patinadores.</p>
+
+  <label>Localidad</label>
+  <input type="text" id="localidad" placeholder="Ej. San Miguel">
+
+  <label>Nombre de la calle</label>
+  <input type="text" id="calle" placeholder="Ej. Avenida Perón">
+
+  <label>Entre qué calles</label>
+  <input type="text" id="tramo" placeholder="Ej. Sarmiento y Belgrano">
+
+  <label>Estado del pavimento</label>
+  <div class="form-options">
+    <button type="button" onclick="seleccionarEstado(1,this)">😖 Malo</button>
+    <button type="button" onclick="seleccionarEstado(3,this)">😐 Regular</button>
+    <button type="button" onclick="seleccionarEstado(5,this)">😀 Bueno</button>
+  </div>
+
+  <label>Problemas encontrados</label>
+  <div class="form-options">
+    <button type="button" onclick="seleccionarProblema('Pozos',this)">Pozos</button>
+    <button type="button" onclick="seleccionarProblema('Desniveles',this)">Desniveles</button>
+    <button type="button" onclick="seleccionarProblema('Obstáculos',this)">Obstáculos</button>
+    <button type="button" onclick="seleccionarProblema('Mucho tránsito',this)">Mucho tránsito</button>
+    <button type="button" onclick="seleccionarProblema('Ninguno',this)">Ninguno</button>
+  </div>
+
+  <label>Comentario (opcional)</label>
+  <textarea id="comentario" placeholder="Contanos algo más..."></textarea>
+
+  <button type="button" onclick="guardarEvaluacionManual()">
+    ENVIAR EVALUACIÓN
+  </button>
+
+  <button type="button" onclick="cerrarFormularioManual()">
+    CANCELAR
+  </button>
+
+  <p id="mensajeFormulario"></p>
+</div>
     <div class="notice">
       Mapa base de OpenStreetMap.
       Las calles todavía no cuentan con evaluaciones
@@ -372,7 +414,7 @@
 <div class="card">
   <h3>🏠 Informar una calle</h3>
   <p>¿Ya terminaste de patinar? Registrá calles y recorridos desde tu casa.</p>
-  <button onclick="showMessage('Próximamente: carga manual de calles.')">
+  <button onclick="abrirFormularioManual()"
     Cargar evaluación
   </button>
 </div>
