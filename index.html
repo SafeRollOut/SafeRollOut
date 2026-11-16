@@ -281,6 +281,87 @@
         padding: 16px 5%;
       }
     }
+.form-panel {
+  background: #101820;
+  color: #F5F6F7;
+  padding: 22px;
+  border: 1px solid #FF762E;
+  border-radius: 16px;
+  margin: 20px 15px;
+}
+
+.form-panel h2 {
+  color: #FF762E;
+  margin-bottom: 8px;
+}
+
+.form-panel p {
+  color: #AEB9C2;
+  margin-bottom: 18px;
+}
+
+.form-panel label {
+  display: block;
+  margin: 18px 0 8px;
+  font-weight: bold;
+}
+
+.form-panel input,
+.form-panel textarea {
+  width: 100%;
+  padding: 13px;
+  background: #1C2933;
+  color: white;
+  border: 1px solid #46545F;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.form-panel textarea {
+  min-height: 80px;
+}
+
+.form-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.form-options button {
+  background: #1C2933;
+  color: white;
+  border: 1px solid #46545F;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.form-options button.selected {
+  background: #FF762E;
+  color: #101820;
+  border-color: #FF762E;
+}
+
+.form-panel > button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.form-panel > button:first-of-type {
+  background: #FF762E;
+  color: #101820;
+}
+
+.form-panel > button:last-of-type {
+  background: #34434F;
+  color: white;
+}
   </style>
 </head>
 
@@ -612,6 +693,90 @@ L.marker([latitud, longitud], { icon: iconoRoller })
     console.error('Error en la búsqueda:', error);
     mensaje.textContent = 'No se pudo realizar la búsqueda. Intentá nuevamente.';
   }
+}
+// ESTADO DEL FORMULARIO MANUAL
+let estadoSeleccionado = null;
+let problemasSeleccionados = [];
+
+// ABRIR FORMULARIO
+function abrirFormularioManual() {
+  document.getElementById('formularioManual').style.display = 'block';
+  document.getElementById('formularioManual').scrollIntoView({
+    behavior: 'smooth'
+  });
+}
+
+// CERRAR FORMULARIO
+function cerrarFormularioManual() {
+  document.getElementById('formularioManual').style.display = 'none';
+}
+
+// SELECCIONAR ESTADO DEL PAVIMENTO
+function seleccionarEstado(valor, boton) {
+  estadoSeleccionado = valor;
+
+  document.querySelectorAll(
+    '#formularioManual .form-options:first-of-type button'
+  ).forEach(b => b.classList.remove('selected'));
+
+  boton.classList.add('selected');
+}
+
+// SELECCIONAR PROBLEMAS
+function seleccionarProblema(problema, boton) {
+  if (problema === 'Ninguno') {
+    problemasSeleccionados = ['Ninguno'];
+    boton.parentElement.querySelectorAll('button')
+      .forEach(b => b.classList.remove('selected'));
+    boton.classList.add('selected');
+    return;
+  }
+
+  problemasSeleccionados = problemasSeleccionados.filter(
+    p => p !== 'Ninguno'
+  );
+
+  const ninguno = boton.parentElement.querySelector(
+    'button:last-child'
+  );
+
+  if (ninguno) ninguno.classList.remove('selected');
+
+  if (problemasSeleccionados.includes(problema)) {
+    problemasSeleccionados = problemasSeleccionados.filter(
+      p => p !== problema
+    );
+    boton.classList.remove('selected');
+  } else {
+    problemasSeleccionados.push(problema);
+    boton.classList.add('selected');
+  }
+}
+
+// VALIDAR Y MOSTRAR EVALUACIÓN DE PRUEBA
+function guardarEvaluacionManual() {
+  const localidad = document.getElementById('localidad').value.trim();
+  const calle = document.getElementById('calle').value.trim();
+  const mensaje = document.getElementById('mensajeFormulario');
+
+  if (!localidad || !calle || !estadoSeleccionado ||
+      problemasSeleccionados.length === 0) {
+    mensaje.textContent =
+      'Completá localidad, calle, estado y problemas encontrados.';
+    return;
+  }
+
+  mensaje.textContent =
+    '¡Formulario completo! Todavía no se guardó en la base de datos.';
+
+  console.log({
+    localidad,
+    calle,
+    tramo: document.getElementById('tramo').value,
+    estado: estadoSeleccionado,
+    problemas: problemasSeleccionados,
+    comentario: document.getElementById('comentario').value
+  });
 }
 </script>
 </body>
