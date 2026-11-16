@@ -133,16 +133,33 @@
     }
 
     .card {
-      background: #1C2933;
-      padding: 22px;
-      border-radius: 13px;
-      border: 1px solid #34434F;
-    }
+  background: linear-gradient(145deg, #1C2933, #15212A);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #34434F;
+  border-left: 4px solid #FF762E;
+  box-shadow: 0 5px 18px rgba(0,0,0,0.20);
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
 
-    .card h3 {
-      margin-bottom: 9px;
-      font-size: 17px;
-    }
+.card:hover {
+  transform: translateY(-3px);
+  border-color: #FF762E;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #F5F6F7;
+}
+
+.card p {
+  color: #AEB9C2;
+  font-size: 14px;
+  line-height: 1.5;
+}
 
     .card p {
       color: var(--gray);
