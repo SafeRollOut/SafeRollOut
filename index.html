@@ -434,6 +434,46 @@
     CREAR CUENTA
   </button>
 </div>
+<div id="formularioRegistro" class="auth-panel" style="display:none;">
+
+  <h2>CREAR CUENTA</h2>
+  <p>Sumate a la comunidad SafeRollOut</p>
+
+  <label>Nombre o alias</label>
+  <input type="text" id="registroNombre"
+  placeholder="Elegí tu nombre o alias">
+
+  <label>Correo electrónico</label>
+  <input type="email" id="registroEmail"
+  placeholder="Tu correo electrónico">
+
+  <label>Contraseña</label>
+  <input type="password" id="registroPassword"
+  placeholder="Mínimo 8 caracteres">
+
+  <label>Localidad</label>
+  <input type="text" id="registroLocalidad"
+  placeholder="Ej. San Miguel">
+
+  <label>Fotografía de perfil (opcional)</label>
+  <input type="file" id="registroFoto" accept="image/jpeg,image/png,image/webp">
+
+  <label class="normas">
+    <input type="checkbox" id="aceptarNormas">
+    Acepto las normas de la comunidad SafeRollOut.
+  </label>
+
+  <button type="button" onclick="registrarUsuario()">
+    CREAR MI CUENTA
+  </button>
+
+  <button type="button" onclick="cerrarRegistro()">
+    CANCELAR
+  </button>
+
+  <p id="mensajeRegistro"></p>
+
+</div>
 </header>
 
 <main>
