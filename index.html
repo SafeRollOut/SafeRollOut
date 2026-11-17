@@ -941,7 +941,11 @@ async function registrarUsuario() {
     mensaje.textContent = 'Completá todos los campos obligatorios.';
     return;
   }
-
+if (!/^[A-Za-z0-9_]{3,20}$/.test(nombre)) {
+  mensaje.textContent =
+    'El nombre o alias debe tener entre 3 y 20 caracteres. Solo letras, números y guion bajo.';
+  return;
+}
   if (password.length < 8) {
     mensaje.textContent = 'La contraseña debe tener al menos 8 caracteres.';
     return;
