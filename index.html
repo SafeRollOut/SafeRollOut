@@ -849,6 +849,99 @@ async function buscarUbicacionTramo() {
     mensaje.textContent = 'No se pudo buscar. Intentá nuevamente.';
   }
 }
+    // SELECCIÓN DE TRAMOS EN EL MAPA
+
+let puntoInicio = null;
+let puntoFin = null;
+let marcadorInicio = null;
+let marcadorFin = null;
+let lineaTramo = null;
+
+// ACTIVAR SELECCIÓN
+function activarSeleccionTramo() {
+
+  const lat = document.getElementById('latitudTramo').value;
+  const lon = document.getElementById('longitudTramo').value;
+  const estado = document.getElementById('estadoSeleccionTramo');
+
+  if (!lat || !lon) {
+    estado.textContent = 'Primero tenés que buscar una calle.';
+    return;
+  }
+
+  // Limpiar selección anterior
+  map.off('click', seleccionarPuntoTramo);
+
+  if (marcadorInicio) map.removeLayer(marcadorInicio);
+  if (marcadorFin) map.removeLayer(marcadorFin);
+  if (lineaTramo) map.removeLayer(lineaTramo);
+
+  puntoInicio = null;
+  puntoFin = null;
+
+  document.getElementById('inicioLat').value = '';
+  document.getElementById('inicioLon').value = '';
+  document.getElementById('finLat').value = '';
+  document.getElementById('finLon').value = '';
+
+  estado.textContent = 'Seleccioná en el mapa el INICIO del tramo (punto A).';
+
+  map.on('click', seleccionarPuntoTramo);
+}
+
+// REGISTRAR LOS DOS PUNTOS
+function seleccionarPuntoTramo(evento) {
+
+  const lat = evento.latlng.lat;
+  const lon = evento.latlng.lng;
+  const estado = document.getElementById('estadoSeleccionTramo');
+
+  if (!puntoInicio) {
+
+    puntoInicio = [lat, lon];
+
+    document.getElementById('inicioLat').value = lat;
+    document.getElementById('inicioLon').value = lon;
+
+    marcadorInicio = L.circleMarker(puntoInicio, {
+      radius: 8,
+      color: '#FFFFFF',
+      weight: 2,
+      fillColor: '#16A36A',
+      fillOpacity: 1
+    }).addTo(map).bindPopup('Inicio del tramo (A)').openPopup();
+
+    estado.textContent = '¡Inicio marcado! Ahora seleccioná el FINAL (punto B).';
+
+  } else {
+
+    puntoFin = [lat, lon];
+
+    document.getElementById('finLat').value = lat;
+    document.getElementById('finLon').value = lon;
+
+    marcadorFin = L.circleMarker(puntoFin, {
+      radius: 8,
+      color: '#FFFFFF',
+      weight: 2,
+      fillColor: '#E5484D',
+      fillOpacity: 1
+    }).addTo(map).bindPopup('Final del tramo (B)').openPopup();
+
+    lineaTramo = L.polyline(
+      [puntoInicio, puntoFin],
+      {
+        color: '#FF762E',
+        weight: 5
+      }
+    ).addTo(map);
+
+    estado.textContent = '¡Tramo seleccionado correctamente!';
+
+    // Finalizar selección
+    map.off('click', seleccionarPuntoTramo);
+  }
+}
 </script>
 </body>
 </html>
