@@ -977,14 +977,26 @@ if (!/^[A-Za-z0-9_]{3,20}$/.test(nombre)) {
       '¡Cuenta creada! Revisá tu correo electrónico para confirmar el registro.';
 
   } catch (error) {
-    console.error(error);
+  console.error('Error en el registro:', error);
 
-    if (error.code === '23505') {
-      mensaje.textContent = 'Ese nombre o alias ya está en uso. Elegí otro.';
-    } else {
-      mensaje.textContent = 'No se pudo crear la cuenta: ' + error.message;
-    }
+  const detalle = (
+    (error.message || '') + ' ' +
+    (error.code || '') + ' ' +
+    (error.details || '')
+  ).toLowerCase();
+
+  if (
+    detalle.includes('profiles_display_name_unique') ||
+    detalle.includes('duplicate key') ||
+    detalle.includes('23505')
+  ) {
+    mensaje.textContent =
+      'Ese nombre o alias ya está ocupado. Probá con otro.';
+  } else {
+    mensaje.textContent =
+      'No se pudo crear la cuenta. Revisá los datos e intentá nuevamente.';
   }
+}
 } 
 // CERRAR FORMULARIO
 function cerrarFormularioManual() {
