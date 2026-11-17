@@ -945,7 +945,53 @@ function cerrarRegistro() {
 }
 
 function abrirLogin() {
-  alert('Próximamente: inicio de sesión.');
+  document.getElementById('formularioLogin').style.display = 'block';
+  document.getElementById('formularioLogin').scrollIntoView({
+    behavior: 'smooth'
+  });
+}
+
+function cerrarLogin() {
+  document.getElementById('formularioLogin').style.display = 'none';
+}
+
+async function iniciarSesion() {
+
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const mensaje = document.getElementById('mensajeLogin');
+
+  if (!email || !password) {
+    mensaje.textContent = 'Completá tu correo y contraseña.';
+    return;
+  }
+
+  mensaje.textContent = 'Verificando acceso...';
+
+  try {
+
+    const { data, error } =
+      await window.supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) throw error;
+
+    const alias = data.user.user_metadata.display_name || 'Usuario';
+
+    mensaje.textContent = '¡Bienvenido a SafeRollOut, ' + alias + '!';
+
+    console.log('Usuario conectado:', data.user);
+
+  } catch (error) {
+
+    console.error(error);
+
+    mensaje.textContent =
+      'No se pudo iniciar sesión. Verificá tu correo y contraseña.';
+
+  }
 }
 
    // REGISTRO DE USUARIOS SAFEROLLOUT
