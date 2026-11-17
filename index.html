@@ -925,6 +925,63 @@ function cerrarRegistro() {
 function abrirLogin() {
   alert('Próximamente: inicio de sesión.');
 }
+
+   // REGISTRO DE USUARIOS SAFEROLLOUT
+
+async function registrarUsuario() {
+
+  const nombre = document.getElementById('registroNombre').value.trim();
+  const email = document.getElementById('registroEmail').value.trim();
+  const password = document.getElementById('registroPassword').value;
+  const localidad = document.getElementById('registroLocalidad').value.trim();
+  const aceptar = document.getElementById('aceptarNormas').checked;
+  const mensaje = document.getElementById('mensajeRegistro');
+
+  if (!nombre || !email || !password || !localidad) {
+    mensaje.textContent = 'Completá todos los campos obligatorios.';
+    return;
+  }
+
+  if (password.length < 8) {
+    mensaje.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+    return;
+  }
+
+  if (!aceptar) {
+    mensaje.textContent = 'Tenés que aceptar las normas de la comunidad.';
+    return;
+  }
+
+  mensaje.textContent = 'Creando tu cuenta...';
+
+  try {
+    const { data, error } = await window.supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname,
+        data: {
+          display_name: nombre,
+          locality: localidad
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    mensaje.textContent =
+      '¡Cuenta creada! Revisá tu correo electrónico para confirmar el registro.';
+
+  } catch (error) {
+    console.error(error);
+
+    if (error.code === '23505') {
+      mensaje.textContent = 'Ese nombre o alias ya está en uso. Elegí otro.';
+    } else {
+      mensaje.textContent = 'No se pudo crear la cuenta: ' + error.message;
+    }
+  }
+} 
 // CERRAR FORMULARIO
 function cerrarFormularioManual() {
   document.getElementById('formularioManual').style.display = 'none';
