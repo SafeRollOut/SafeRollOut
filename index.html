@@ -362,6 +362,29 @@
   background: #34434F;
   color: white;
 }
+    /* BOTONES DE CONTROL DEL RECORRIDO */
+
+.route-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+#formularioManual .route-controls button {
+  background: #1C2933;
+  color: #F5F6F7;
+  border: 1px solid #FF762E;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#formularioManual .route-controls button:hover {
+  background: #FF762E;
+  color: #101820;
+}
   </style>
 </head>
 
@@ -464,7 +487,7 @@
 </p>
  <button
   type="button"
-  onclick="alert('El botón funciona'); activarSeleccionTramo()">
+onclick="activarSeleccionTramo()"
   📍 SELECCIONAR TRAMO EN EL MAPA
 </button>
   <div class="route-controls">
