@@ -911,7 +911,20 @@ function abrirFormularioManual() {
     behavior: 'smooth'
   });
 }
+function abrirRegistro() {
+  document.getElementById('formularioRegistro').style.display = 'block';
+  document.getElementById('formularioRegistro').scrollIntoView({
+    behavior: 'smooth'
+  });
+}
 
+function cerrarRegistro() {
+  document.getElementById('formularioRegistro').style.display = 'none';
+}
+
+function abrirLogin() {
+  alert('Próximamente: inicio de sesión.');
+}
 // CERRAR FORMULARIO
 function cerrarFormularioManual() {
   document.getElementById('formularioManual').style.display = 'none';
