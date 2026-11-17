@@ -864,15 +864,14 @@ async function buscarUbicacionTramo() {
 }
     // SELECCIÓN DE TRAMOS EN EL MAPA
 
-let puntoInicio = null;
-let puntoFin = null;
-let marcadorInicio = null;
-let marcadorFin = null;
-let lineaTramo = null;
+// DIBUJO MANUAL DE RECORRIDOS
 
-// ACTIVAR SELECCIÓN
+let puntosRecorrido = [];
+let marcadoresRecorrido = [];
+let lineaRecorrido = null;
+let seleccionActiva = false;
+
 function activarSeleccionTramo() {
-
   const lat = document.getElementById('latitudTramo').value;
   const lon = document.getElementById('longitudTramo').value;
   const estado = document.getElementById('estadoSeleccionTramo');
@@ -882,78 +881,152 @@ function activarSeleccionTramo() {
     return;
   }
 
-  // Limpiar selección anterior
-  map.off('click', seleccionarPuntoTramo);
+  borrarRecorrido();
 
-  if (marcadorInicio) map.removeLayer(marcadorInicio);
-  if (marcadorFin) map.removeLayer(marcadorFin);
-  if (lineaTramo) map.removeLayer(lineaTramo);
+  seleccionActiva = true;
 
-  puntoInicio = null;
-  puntoFin = null;
+  estado.textContent =
+    'Marcá en el mapa el inicio y después seguí haciendo clic sobre el recorrido.';
+
+  map.setView([Number(lat), Number(lon)], 17);
+
+  map.on('click', agregarPuntoRecorrido);
+}
+
+function agregarPuntoRecorrido(evento) {
+  if (!seleccionActiva) return;
+
+  const punto = [
+    evento.latlng.lat,
+    evento.latlng.lng
+  ];
+
+  puntosRecorrido.push(punto);
+
+  const numero = puntosRecorrido.length;
+
+  const color = numero === 1 ? '#16A36A' : '#FF762E';
+
+  const marcador = L.circleMarker(punto, {
+    radius: 7,
+    color: '#FFFFFF',
+    weight: 2,
+    fillColor: color,
+    fillOpacity: 1
+  }).addTo(map);
+
+  marcador.bindPopup(
+    numero === 1
+      ? 'Inicio del recorrido'
+      : 'Punto ' + numero
+  );
+
+  marcadoresRecorrido.push(marcador);
+
+  actualizarLineaRecorrido();
+
+  if (numero === 1) {
+    document.getElementById('inicioLat').value = punto[0];
+    document.getElementById('inicioLon').value = punto[1];
+    document.getElementById('estadoSeleccionTramo').textContent =
+      'Inicio marcado. Seguí haciendo clic sobre la calle para dibujar el recorrido.';
+  } else {
+    document.getElementById('estadoSeleccionTramo').textContent =
+      numero + ' puntos marcados. Podés seguir dibujando.';
+  }
+}
+
+function actualizarLineaRecorrido() {
+  if (lineaRecorrido) {
+    map.removeLayer(lineaRecorrido);
+  }
+
+  if (puntosRecorrido.length >= 2) {
+    lineaRecorrido = L.polyline(puntosRecorrido, {
+      color: '#FF762E',
+      weight: 5,
+      opacity: 0.9
+    }).addTo(map);
+  }
+
+  if (puntosRecorrido.length > 0) {
+    const ultimo = puntosRecorrido[puntosRecorrido.length - 1];
+
+    document.getElementById('finLat').value = ultimo[0];
+    document.getElementById('finLon').value = ultimo[1];
+  }
+}
+
+function deshacerPunto() {
+  if (puntosRecorrido.length === 0) return;
+
+  const ultimoMarcador = marcadoresRecorrido.pop();
+
+  if (ultimoMarcador) {
+    map.removeLayer(ultimoMarcador);
+  }
+
+  puntosRecorrido.pop();
+
+  actualizarLineaRecorrido();
+
+  if (puntosRecorrido.length === 0) {
+    document.getElementById('inicioLat').value = '';
+    document.getElementById('inicioLon').value = '';
+    document.getElementById('finLat').value = '';
+    document.getElementById('finLon').value = '';
+  } else {
+    document.getElementById('inicioLat').value = puntosRecorrido[0][0];
+    document.getElementById('inicioLon').value = puntosRecorrido[0][1];
+  }
+
+  document.getElementById('estadoSeleccionTramo').textContent =
+    puntosRecorrido.length + ' puntos marcados.';
+}
+
+function borrarRecorrido() {
+  seleccionActiva = false;
+
+  map.off('click', agregarPuntoRecorrido);
+
+  marcadoresRecorrido.forEach(marcador => {
+    map.removeLayer(marcador);
+  });
+
+  if (lineaRecorrido) {
+    map.removeLayer(lineaRecorrido);
+  }
+
+  puntosRecorrido = [];
+  marcadoresRecorrido = [];
+  lineaRecorrido = null;
 
   document.getElementById('inicioLat').value = '';
   document.getElementById('inicioLon').value = '';
   document.getElementById('finLat').value = '';
   document.getElementById('finLon').value = '';
 
-  estado.textContent = 'Seleccioná en el mapa el INICIO del tramo (punto A).';
-
-  map.on('click', seleccionarPuntoTramo);
+  document.getElementById('estadoSeleccionTramo').textContent =
+    'Recorrido borrado. Podés comenzar nuevamente.';
 }
 
-// REGISTRAR LOS DOS PUNTOS
-function seleccionarPuntoTramo(evento) {
-
-  const lat = evento.latlng.lat;
-  const lon = evento.latlng.lng;
-  const estado = document.getElementById('estadoSeleccionTramo');
-
-  if (!puntoInicio) {
-
-    puntoInicio = [lat, lon];
-
-    document.getElementById('inicioLat').value = lat;
-    document.getElementById('inicioLon').value = lon;
-
-    marcadorInicio = L.circleMarker(puntoInicio, {
-      radius: 8,
-      color: '#FFFFFF',
-      weight: 2,
-      fillColor: '#16A36A',
-      fillOpacity: 1
-    }).addTo(map).bindPopup('Inicio del tramo (A)').openPopup();
-
-    estado.textContent = '¡Inicio marcado! Ahora seleccioná el FINAL (punto B).';
-
-  } else {
-
-    puntoFin = [lat, lon];
-
-    document.getElementById('finLat').value = lat;
-    document.getElementById('finLon').value = lon;
-
-    marcadorFin = L.circleMarker(puntoFin, {
-      radius: 8,
-      color: '#FFFFFF',
-      weight: 2,
-      fillColor: '#E5484D',
-      fillOpacity: 1
-    }).addTo(map).bindPopup('Final del tramo (B)').openPopup();
-
-    lineaTramo = L.polyline(
-      [puntoInicio, puntoFin],
-      {
-        color: '#FF762E',
-        weight: 5
-      }
-    ).addTo(map);
-
-    estado.textContent = '¡Tramo seleccionado correctamente!';
-
-    // Finalizar selección
-    map.off('click', seleccionarPuntoTramo);
+function finalizarRecorrido() {
+  if (puntosRecorrido.length < 2) {
+    document.getElementById('estadoSeleccionTramo').textContent =
+      'Necesitás marcar al menos dos puntos.';
+    return;
   }
+
+  seleccionActiva = false;
+
+  map.off('click', agregarPuntoRecorrido);
+
+  document.getElementById('estadoSeleccionTramo').textContent =
+    '¡Recorrido finalizado! Marcaste ' +
+    puntosRecorrido.length +
+    ' puntos.';
+
+  console.log('Puntos del recorrido:', puntosRecorrido);
 }
 </script>
 </body>
