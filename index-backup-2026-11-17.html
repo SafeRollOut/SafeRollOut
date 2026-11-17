@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101820">
+
+  <title>SafeRollOut | Rodá seguro. Explorá libre.</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    :root {
+      --dark: #101820;
+      --orange: #FF762E;
+      --green: #16A36A;
+      --white: #F5F6F7;
+      --gray: #9BA6AF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 18px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #29343D;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .slogan {
+      color: var(--gray);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .badge {
+      background: var(--green);
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 30px 6%;
+      max-width: 1450px;
+      margin: auto;
+    }
+
+    .welcome {
+      margin-bottom: 24px;
+    }
+
+    .welcome h1 {
+      font-size: clamp(25px, 4vw, 38px);
+      margin-bottom: 10px;
+    }
+
+    .welcome h1 span {
+      color: var(--orange);
+    }
+
+    .welcome p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .map-container {
+      background: #1C2933;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #34434F;
+    }
+
+    .map-header {
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .map-header h2 {
+      font-size: 18px;
+    }
+
+    .map-header span {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    #map {
+      width: 100%;
+      height: 540px;
+      background: #26333D;
+    }
+
+    .notice {
+      padding: 15px;
+      color: var(--gray);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .card {
+  background: linear-gradient(145deg, #1C2933, #15212A);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #34434F;
+  border-left: 4px solid #FF762E;
+  box-shadow: 0 5px 18px rgba(0,0,0,0.20);
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: #FF762E;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #F5F6F7;
+}
+
+.card p {
+  color: #AEB9C2;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+    .card p {
+      color: var(--gray);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .card button {
+      margin-top: 16px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 7px;
+      background: var(--orange);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 15px;
+      color: var(--gray);
+      font-size: 12px;
+    }
+    .map-legend {
+  background: #1C2933;
+  padding: 12px 15px;
+  color: #F5F6F7;
+  border-top: 1px solid #35434D;
+}
+
+.map-legend strong {
+  display: block;
+  font-size: 11px;
+  color: #FF762E;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+}
+
+.legend-items span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #F5F6F7;
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.green { background: #16A36A; }
+.yellow { background: #F2C94C; }
+.red { background: #E5484D; }
+.gray { background: #9BA6AF; }
+
+.warning {
+  color: #FF762E;
+  font-size: 16px;
+  font-weight: bold;
+}
+.search-box {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  background: #1C2933;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #46545F;
+  background: #101820;
+  color: white;
+  font-size: 14px;
+}
+
+.search-box input::placeholder {
+  color: #9BA6AF;
+}
+
+.search-box button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #FF762E;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#searchMessage {
+  padding: 0 15px 12px;
+  background: #1C2933;
+  color: #9BA6AF;
+  font-size: 13px;
+}
+@media(max-width: 700px) {
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      #map {
+        height: 430px;
+      }
+
+      header {
+        padding: 16px 5%;
+      }
+    }
+.form-panel {
+  background: #101820;
+  color: #F5F6F7;
+  padding: 22px;
+  border: 1px solid #FF762E;
+  border-radius: 16px;
+  margin: 20px 15px;
+}
+
+.form-panel h2 {
+  color: #FF762E;
+  margin-bottom: 8px;
+}
+
+.form-panel p {
+  color: #AEB9C2;
+  margin-bottom: 18px;
+}
+
+.form-panel label {
+  display: block;
+  margin: 18px 0 8px;
+  font-weight: bold;
+}
+
+.form-panel input,
+.form-panel textarea {
+  width: 100%;
+  padding: 13px;
+  background: #1C2933;
+  color: white;
+  border: 1px solid #46545F;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.form-panel textarea {
+  min-height: 80px;
+}
+
+.form-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.form-options button {
+  background: #1C2933;
+  color: white;
+  border: 1px solid #46545F;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.form-options button.selected {
+  background: #FF762E;
+  color: #101820;
+  border-color: #FF762E;
+}
+
+.form-panel > button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.form-panel > button:first-of-type {
+  background: #FF762E;
+  color: #101820;
+}
+
+.form-panel > button:last-of-type {
+  background: #34434F;
+  color: white;
+}
+    /* BOTONES DE CONTROL DEL RECORRIDO */
+
+.route-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+#formularioManual .route-controls button {
+  background: #1C2933;
+  color: #F5F6F7;
+  border: 1px solid #FF762E;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#formularioManual .route-controls button:hover {
+  background: #FF762E;
+  color: #101820;
+}
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="brand">Safe<span>RollOut</span></div>
+    <div class="slogan">Rodá seguro. Explorá libre.</div>
+  </div>
+
+  <div class="badge">COMUNIDAD ROLLER</div>
+</header>
+
+<main>
+
+  <section class="welcome">
+    <h1>Explorá tu ciudad.<br>
+      <span>Rodá con seguridad.</span>
+    </h1>
+
+    <p>
+      Un mapa colaborativo para descubrir calles,
+      compartir recorridos y conocer las condiciones
+      del camino antes de salir a patinar.
+    </p>
+  </section>
+
+  <section class="map-container">
+
+    <div class="map-header">
+  <h2>Mapa colaborativo AMBA</h2>
+  <span>● Mapa cartográfico activo</span>
+</div>
+
+<div class="search-box">
+  <input
+    type="text"
+    id="streetSearch"
+    placeholder="Buscar calle, localidad o dirección..."
+  >
+
+  <button onclick="buscarUbicacion()">
+    BUSCAR
+  </button>
+</div>
+
+<div id="searchMessage"></div>
+<div class="map-legend">
+  <strong>REFERENCIAS DEL MAPA</strong>
+
+  <div class="legend-items">
+    <span><i class="dot green"></i> Buen estado</span>
+    <span><i class="dot yellow"></i> Estado regular</span>
+    <span><i class="dot red"></i> Mal estado</span>
+    <span><i class="warning">⚠</i> Riesgo u obstáculo</span>
+    <span><i class="dot gray"></i> Sin información</span>
+  </div>
+</div>
+<div id="map"></div>
+<div id="formularioManual" class="form-panel" style="display:none;">
+
+  <h2>🛼 Informar una calle</h2>
+  <p>Compartí tu experiencia para ayudar a otros patinadores.</p>
+
+  <label>Localidad</label>
+  <input type="text" id="localidad" placeholder="Ej. San Miguel">
+
+  <label>Nombre de la calle</label>
+  <input type="text" id="calle" placeholder="Ej. Avenida Perón">
+
+  <label>Entre qué calles</label>
+  <input type="text" id="tramo" placeholder="Ej. Sarmiento y Belgrano">
+  <label>📍 Ubicación del tramo</label>
+
+<input
+  type="text"
+  id="busquedaTramo"
+  placeholder="Buscar calle y localidad..."
+>
+
+<button
+  type="button"
+  onclick="buscarUbicacionTramo()"
+>
+  BUSCAR EN EL MAPA
+</button>
+
+<p id="mensajeUbicacion"></p>
+
+<input type="hidden" id="latitudTramo">
+<input type="hidden" id="longitudTramo">
+<input type="hidden" id="inicioLat">
+<input type="hidden" id="inicioLon">
+<input type="hidden" id="finLat">
+<input type="hidden" id="finLon">
+
+<p id="estadoSeleccionTramo">
+  Primero buscá una calle. Después seleccioná el inicio y el final en el mapa.
+</p>
+ <button
+  type="button"
+  onclick="activarSeleccionTramo()">
+  📍 SELECCIONAR TRAMO EN EL MAPA
+</button>
+  <div class="route-controls">
+  <button type="button" onclick="deshacerPunto()">
+    ↩️ DESHACER
+  </button>
+
+  <button type="button" onclick="borrarRecorrido()">
+    🗑️ BORRAR
+  </button>
+
+  <button type="button" onclick="finalizarRecorrido()">
+    ✅ FINALIZAR
+  </button>
+</div>
+  <label>Estado del pavimento</label>
+  <div class="form-options">
+    <button type="button" onclick="seleccionarEstado(1,this)">😖 Malo</button>
+    <button type="button" onclick="seleccionarEstado(3,this)">😐 Regular</button>
+    <button type="button" onclick="seleccionarEstado(5,this)">😀 Bueno</button>
+  </div>
+
+  <label>Problemas encontrados</label>
+  <div class="form-options">
+    <button type="button" onclick="seleccionarProblema('Pozos',this)">Pozos</button>
+    <button type="button" onclick="seleccionarProblema('Desniveles',this)">Desniveles</button>
+    <button type="button" onclick="seleccionarProblema('Obstáculos',this)">Obstáculos</button>
+    <button type="button" onclick="seleccionarProblema('Mucho tránsito',this)">Mucho tránsito</button>
+    <button type="button" onclick="seleccionarProblema('Ninguno',this)">Ninguno</button>
+  </div>
+
+  <label>Comentario (opcional)</label>
+  <textarea id="comentario" placeholder="Contanos algo más..."></textarea>
+
+  <button type="button" onclick="guardarEvaluacionManual()">
+    ENVIAR EVALUACIÓN
+  </button>
+
+  <button type="button" onclick="cerrarFormularioManual()">
+    CANCELAR
+  </button>
+
+  <p id="mensajeFormulario"></p>
+</div>
+    <div class="notice">
+      Mapa base de OpenStreetMap.
+      Las calles todavía no cuentan con evaluaciones
+      comunitarias verificadas. Las zonas de inicio
+      indican áreas de interés, no calles relevadas.
+    </div>
+
+  </section>
+
+  <section class="actions">
+
+    <div class="card">
+  <h3>🗺️ Explorar el mapa</h3>
+  <p>Descubrí calles, consultá el estado del pavimento y explorá nuevas zonas para patinar.</p>
+  <button onclick="showMessage('Exploración del mapa disponible.')">
+    Explorar
+  </button>
+</div>
+
+<div class="card">
+  <h3>🛼 Estoy patinando</h3>
+  <p>Informá rápidamente cómo está una calle utilizando tu ubicación GPS.</p>
+  <button onclick="showMessage('Próximamente: evaluación rápida con GPS.')">
+    Reportar ahora
+  </button>
+</div>
+
+<div class="card">
+  <h3>🏠 Informar una calle</h3>
+  <p>¿Ya terminaste de patinar? Registrá calles y recorridos desde tu casa.</p>
+  <button onclick="abrirFormularioManual()">
+  Cargar evaluación
+</button>
+</div>
+
+<div class="card">
+  <h3>🧭 Mis recorridos</h3>
+  <p>Guardá tus salidas, organizá tus recorridos y compartí tus experiencias.</p>
+  <button onclick="showMessage('Próximamente: historial de recorridos.')">
+    Mis recorridos
+  </button>
+</div>
+
+  </section>
+
+</main>
+
+<footer>
+  SafeRollOut © 2026 · Rodá seguro. Explorá libre.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+  // MAPA INICIAL: SAN MIGUEL, BUENOS AIRES
+
+  const map = L.map('map').setView(
+    [-34.543, -58.712],
+    12
+  );
+
+  L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    }
+  ).addTo(map);
+
+  // ZONAS DE INTERÉS INICIAL
+
+  const zones = [
+    {
+      name: 'San Miguel',
+      lat: -34.543,
+      lon: -58.712
+    },
+    {
+      name: 'Muñiz',
+      lat: -34.552,
+      lon: -58.698
+    },
+    {
+      name: 'Bella Vista',
+      lat: -34.566,
+      lon: -58.690
+    },
+    {
+      name: 'José C. Paz',
+      lat: -34.515,
+      lon: -58.768
+    },
+    {
+      name: 'Malvinas Argentinas',
+      lat: -34.500,
+      lon: -58.700
+    }
+  ];
+
+  zones.forEach(zone => {
+
+    L.circleMarker(
+      [zone.lat, zone.lon],
+      {
+        radius: 7,
+        color: '#FF762E',
+        fillColor: '#FF762E',
+        fillOpacity: 0.9
+      }
+    )
+    .addTo(map)
+    .bindPopup(
+      '<b>' + zone.name + '</b><br>' +
+      'Zona de interés inicial.<br>' +
+      'Sin evaluaciones comunitarias.'
+    );
+
+  });
+
+  function showMessage(message) {
+    alert(message);
+  }
+
+</script>
+<script src="./supabase-config.js"></script>
+  <script>
+async function probarBaseDeDatos() {
+
+  const { data, error } = await window.supabaseClient
+    .from('street_segments')
+    .select('id')
+    .limit(1);
+
+  if (error) {
+    console.error('Error al consultar SafeRollOut:', error);
+    return;
+  }
+
+  console.log('¡Conexión con la base de datos confirmada!');
+  console.log('Registros encontrados:', data.length);
+}
+
+probarBaseDeDatos();
+// BUSCADOR DE CALLES Y LOCALIDADES
+async function buscarUbicacion() {
+
+  const consulta = document.getElementById('streetSearch').value.trim();
+  const mensaje = document.getElementById('searchMessage');
+
+  if (!consulta) {
+    mensaje.textContent = 'Escribí una calle o localidad para buscar.';
+    return;
+  }
+
+  mensaje.textContent = 'Buscando ubicación...';
+
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&q='
+      + encodeURIComponent(consulta);
+
+    const respuesta = await fetch(url);
+    const resultados = await respuesta.json();
+
+    if (resultados.length === 0) {
+      mensaje.textContent = 'No encontramos esa ubicación.';
+      return;
+    }
+
+    const lugar = resultados[0];
+    const latitud = Number(lugar.lat);
+    const longitud = Number(lugar.lon);
+
+    map.setView([latitud, longitud], 16);
+
+    const iconoRoller = L.divIcon({
+  className: '',
+  html: `
+    <svg viewBox="0 0 64 64" width="56" height="56"
+         xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Bota negra con contorno naranja -->
+      <path d="M15 7 L29 7 L32 21
+               L47 27 Q53 29 52 36
+               L13 36 Q8 35 9 29
+               L12 21 Z"
+            fill="#101820"
+            stroke="#FF762E"
+            stroke-width="3"
+            stroke-linejoin="round"/>
+
+      <!-- Lengüeta y detalles -->
+      <path d="M17 10 L25 10 L27 22"
+            fill="none"
+            stroke="#FF762E"
+            stroke-width="2.5"
+            stroke-linecap="round"/>
+
+      <!-- Base del patín -->
+      <path d="M10 37 L54 37"
+            stroke="#101820"
+            stroke-width="5"
+            stroke-linecap="round"/>
+
+      <!-- Cuatro ruedas en línea -->
+      <g fill="#FFFFFF" stroke="#101820" stroke-width="2.5">
+        <circle cx="14" cy="46" r="5"/>
+        <circle cx="25" cy="46" r="5"/>
+        <circle cx="36" cy="46" r="5"/>
+        <circle cx="47" cy="46" r="5"/>
+      </g>
+    </svg>
+  `,
+  iconSize: [56, 56],
+  iconAnchor: [28, 46]
+});
+
+L.marker([latitud, longitud], { icon: iconoRoller })
+  .addTo(map)
+  .bindPopup('<b>' + lugar.display_name + '</b>')
+  .openPopup();
+
+    mensaje.textContent = 'Ubicación encontrada correctamente.';
+
+  } catch (error) {
+    console.error('Error en la búsqueda:', error);
+    mensaje.textContent = 'No se pudo realizar la búsqueda. Intentá nuevamente.';
+  }
+}
+// ESTADO DEL FORMULARIO MANUAL
+let estadoSeleccionado = null;
+let problemasSeleccionados = [];
+
+// ABRIR FORMULARIO
+function abrirFormularioManual() {
+  document.getElementById('formularioManual').style.display = 'block';
+  document.getElementById('formularioManual').scrollIntoView({
+    behavior: 'smooth'
+  });
+}
+
+// CERRAR FORMULARIO
+function cerrarFormularioManual() {
+  document.getElementById('formularioManual').style.display = 'none';
+}
+
+// SELECCIONAR ESTADO DEL PAVIMENTO
+function seleccionarEstado(valor, boton) {
+  estadoSeleccionado = valor;
+
+  document.querySelectorAll(
+    '#formularioManual .form-options:first-of-type button'
+  ).forEach(b => b.classList.remove('selected'));
+
+  boton.classList.add('selected');
+}
+
+// SELECCIONAR PROBLEMAS
+function seleccionarProblema(problema, boton) {
+  if (problema === 'Ninguno') {
+    problemasSeleccionados = ['Ninguno'];
+    boton.parentElement.querySelectorAll('button')
+      .forEach(b => b.classList.remove('selected'));
+    boton.classList.add('selected');
+    return;
+  }
+
+  problemasSeleccionados = problemasSeleccionados.filter(
+    p => p !== 'Ninguno'
+  );
+
+  const ninguno = boton.parentElement.querySelector(
+    'button:last-child'
+  );
+
+  if (ninguno) ninguno.classList.remove('selected');
+
+  if (problemasSeleccionados.includes(problema)) {
+    problemasSeleccionados = problemasSeleccionados.filter(
+      p => p !== problema
+    );
+    boton.classList.remove('selected');
+  } else {
+    problemasSeleccionados.push(problema);
+    boton.classList.add('selected');
+  }
+}
+
+// VALIDAR Y MOSTRAR EVALUACIÓN DE PRUEBA
+function guardarEvaluacionManual() {
+  const localidad = document.getElementById('localidad').value.trim();
+  const calle = document.getElementById('calle').value.trim();
+  const mensaje = document.getElementById('mensajeFormulario');
+
+  if (!localidad || !calle || !estadoSeleccionado ||
+      problemasSeleccionados.length === 0) {
+    mensaje.textContent =
+      'Completá localidad, calle, estado y problemas encontrados.';
+    return;
+  }
+
+  mensaje.textContent =
+    '¡Formulario completo! Todavía no se guardó en la base de datos.';
+
+  console.log({
+    localidad,
+    calle,
+    tramo: document.getElementById('tramo').value,
+    estado: estadoSeleccionado,
+    problemas: problemasSeleccionados,
+    comentario: document.getElementById('comentario').value
+  });
+}
+    // BUSCAR UBICACIÓN DEL TRAMO
+async function buscarUbicacionTramo() {
+  const consulta = document.getElementById('busquedaTramo').value.trim();
+  const mensaje = document.getElementById('mensajeUbicacion');
+
+  if (!consulta) {
+    mensaje.textContent = 'Escribí una calle y localidad.';
+    return;
+  }
+
+  mensaje.textContent = 'Buscando ubicación...';
+
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&q='
+      + encodeURIComponent(consulta);
+
+    const respuesta = await fetch(url);
+    const resultados = await respuesta.json();
+
+    if (!resultados.length) {
+      mensaje.textContent = 'No encontramos esa ubicación.';
+      return;
+    }
+
+    const lugar = resultados[0];
+    const latitud = Number(lugar.lat);
+    const longitud = Number(lugar.lon);
+
+    document.getElementById('latitudTramo').value = latitud;
+    document.getElementById('longitudTramo').value = longitud;
+
+    map.setView([latitud, longitud], 17);
+
+    mensaje.textContent = 'Ubicación encontrada: ' + lugar.display_name;
+
+  } catch (error) {
+    console.error(error);
+    mensaje.textContent = 'No se pudo buscar. Intentá nuevamente.';
+  }
+}
+    // SELECCIÓN DE TRAMOS EN EL MAPA
+
+// DIBUJO MANUAL DE RECORRIDOS
+
+let puntosRecorrido = [];
+let marcadoresRecorrido = [];
+let lineaRecorrido = null;
+let seleccionActiva = false;
+
+function activarSeleccionTramo() {
+  const lat = document.getElementById('latitudTramo').value;
+  const lon = document.getElementById('longitudTramo').value;
+  const estado = document.getElementById('estadoSeleccionTramo');
+
+  if (!lat || !lon) {
+    estado.textContent = 'Primero tenés que buscar una calle.';
+    return;
+  }
+
+  borrarRecorrido();
+
+  seleccionActiva = true;
+
+  estado.textContent =
+    'Marcá en el mapa el inicio y después seguí haciendo clic sobre el recorrido.';
+
+  map.setView([Number(lat), Number(lon)], 17);
+
+  map.on('click', agregarPuntoRecorrido);
+}
+
+function agregarPuntoRecorrido(evento) {
+  if (!seleccionActiva) return;
+
+  const punto = [
+    evento.latlng.lat,
+    evento.latlng.lng
+  ];
+
+  puntosRecorrido.push(punto);
+
+  const numero = puntosRecorrido.length;
+
+  const color = numero === 1 ? '#16A36A' : '#FF762E';
+
+  const marcador = L.circleMarker(punto, {
+    radius: 7,
+    color: '#FFFFFF',
+    weight: 2,
+    fillColor: color,
+    fillOpacity: 1
+  }).addTo(map);
+
+  marcador.bindPopup(
+    numero === 1
+      ? 'Inicio del recorrido'
+      : 'Punto ' + numero
+  );
+
+  marcadoresRecorrido.push(marcador);
+
+  actualizarLineaRecorrido();
+
+  if (numero === 1) {
+    document.getElementById('inicioLat').value = punto[0];
+    document.getElementById('inicioLon').value = punto[1];
+    document.getElementById('estadoSeleccionTramo').textContent =
+      'Inicio marcado. Seguí haciendo clic sobre la calle para dibujar el recorrido.';
+  } else {
+    document.getElementById('estadoSeleccionTramo').textContent =
+      numero + ' puntos marcados. Podés seguir dibujando.';
+  }
+}
+
+function actualizarLineaRecorrido() {
+  if (lineaRecorrido) {
+    map.removeLayer(lineaRecorrido);
+  }
+
+  if (puntosRecorrido.length >= 2) {
+    lineaRecorrido = L.polyline(puntosRecorrido, {
+      color: '#FF762E',
+      weight: 5,
+      opacity: 0.9
+    }).addTo(map);
+  }
+
+  if (puntosRecorrido.length > 0) {
+    const ultimo = puntosRecorrido[puntosRecorrido.length - 1];
+
+    document.getElementById('finLat').value = ultimo[0];
+    document.getElementById('finLon').value = ultimo[1];
+  }
+}
+
+function deshacerPunto() {
+  if (puntosRecorrido.length === 0) return;
+
+  const ultimoMarcador = marcadoresRecorrido.pop();
+
+  if (ultimoMarcador) {
+    map.removeLayer(ultimoMarcador);
+  }
+
+  puntosRecorrido.pop();
+
+  actualizarLineaRecorrido();
+
+  if (puntosRecorrido.length === 0) {
+    document.getElementById('inicioLat').value = '';
+    document.getElementById('inicioLon').value = '';
+    document.getElementById('finLat').value = '';
+    document.getElementById('finLon').value = '';
+  } else {
+    document.getElementById('inicioLat').value = puntosRecorrido[0][0];
+    document.getElementById('inicioLon').value = puntosRecorrido[0][1];
+  }
+
+  document.getElementById('estadoSeleccionTramo').textContent =
+    puntosRecorrido.length + ' puntos marcados.';
+}
+
+function borrarRecorrido() {
+  seleccionActiva = false;
+
+  map.off('click', agregarPuntoRecorrido);
+
+  marcadoresRecorrido.forEach(marcador => {
+    map.removeLayer(marcador);
+  });
+
+  if (lineaRecorrido) {
+    map.removeLayer(lineaRecorrido);
+  }
+
+  puntosRecorrido = [];
+  marcadoresRecorrido = [];
+  lineaRecorrido = null;
+
+  document.getElementById('inicioLat').value = '';
+  document.getElementById('inicioLon').value = '';
+  document.getElementById('finLat').value = '';
+  document.getElementById('finLon').value = '';
+
+  document.getElementById('estadoSeleccionTramo').textContent =
+    'Recorrido borrado. Podés comenzar nuevamente.';
+}
+
+function finalizarRecorrido() {
+  if (puntosRecorrido.length < 2) {
+    document.getElementById('estadoSeleccionTramo').textContent =
+      'Necesitás marcar al menos dos puntos.';
+    return;
+  }
+
+  seleccionActiva = false;
+
+  map.off('click', agregarPuntoRecorrido);
+
+  document.getElementById('estadoSeleccionTramo').textContent =
+    '¡Recorrido finalizado! Marcaste ' +
+    puntosRecorrido.length +
+    ' puntos.';
+
+  console.log('Puntos del recorrido:', puntosRecorrido);
+}
+</script>
+</body>
+</html>
