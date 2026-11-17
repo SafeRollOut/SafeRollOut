@@ -435,6 +435,25 @@
 
   <label>Entre qué calles</label>
   <input type="text" id="tramo" placeholder="Ej. Sarmiento y Belgrano">
+  <label>📍 Ubicación del tramo</label>
+
+<input
+  type="text"
+  id="busquedaTramo"
+  placeholder="Buscar calle y localidad..."
+>
+
+<button
+  type="button"
+  onclick="buscarUbicacionTramo()"
+>
+  BUSCAR EN EL MAPA
+</button>
+
+<p id="mensajeUbicacion"></p>
+
+<input type="hidden" id="latitudTramo">
+<input type="hidden" id="longitudTramo">
 
   <label>Estado del pavimento</label>
   <div class="form-options">
