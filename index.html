@@ -475,6 +475,103 @@
   background: #FF762E;
   color: #101820;
 }
+   /* ADAPTACION RESPONSIVE PARA CELULARES */
+
+@media (max-width: 600px) {
+
+  /* BOTONES DE ACCESO */
+  .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+
+  .auth-buttons button {
+    width: 100%;
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  /* FORMULARIOS DE REGISTRO E INICIO DE SESION */
+  .auth-panel {
+    width: calc(100% - 24px);
+    max-width: none;
+    margin: 18px auto;
+    padding: 18px;
+    box-sizing: border-box;
+    border-radius: 14px;
+  }
+
+  .auth-panel h2 {
+    font-size: 21px;
+    text-align: center;
+  }
+
+  .auth-panel p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .auth-panel label {
+    display: block;
+    font-size: 14px;
+    margin-top: 16px;
+  }
+
+  .auth-panel input:not([type="checkbox"]) {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    font-size: 16px;
+    margin-top: 6px;
+    box-sizing: border-box;
+  }
+
+  .auth-panel input[type="file"] {
+    font-size: 13px;
+    padding: 9px;
+  }
+
+  /* ACEPTACION DE NORMAS */
+  .auth-panel .normas {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .auth-panel .normas input {
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  /* BOTONES DE LOS FORMULARIOS */
+  .auth-panel button {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+
+  /* CONTROLES DEL RECORRIDO */
+  .route-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .route-controls button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+} 
   </style>
 </head>
 
