@@ -797,6 +797,46 @@ function guardarEvaluacionManual() {
     comentario: document.getElementById('comentario').value
   });
 }
+    // BUSCAR UBICACIÓN DEL TRAMO
+async function buscarUbicacionTramo() {
+  const consulta = document.getElementById('busquedaTramo').value.trim();
+  const mensaje = document.getElementById('mensajeUbicacion');
+
+  if (!consulta) {
+    mensaje.textContent = 'Escribí una calle y localidad.';
+    return;
+  }
+
+  mensaje.textContent = 'Buscando ubicación...';
+
+  try {
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&q='
+      + encodeURIComponent(consulta);
+
+    const respuesta = await fetch(url);
+    const resultados = await respuesta.json();
+
+    if (!resultados.length) {
+      mensaje.textContent = 'No encontramos esa ubicación.';
+      return;
+    }
+
+    const lugar = resultados[0];
+    const latitud = Number(lugar.lat);
+    const longitud = Number(lugar.lon);
+
+    document.getElementById('latitudTramo').value = latitud;
+    document.getElementById('longitudTramo').value = longitud;
+
+    map.setView([latitud, longitud], 17);
+
+    mensaje.textContent = 'Ubicación encontrada: ' + lugar.display_name;
+
+  } catch (error) {
+    console.error(error);
+    mensaje.textContent = 'No se pudo buscar. Intentá nuevamente.';
+  }
+}
 </script>
 </body>
 </html>
