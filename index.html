@@ -454,7 +454,19 @@
 
 <input type="hidden" id="latitudTramo">
 <input type="hidden" id="longitudTramo">
+<input type="hidden" id="inicioLat">
+<input type="hidden" id="inicioLon">
+<input type="hidden" id="finLat">
+<input type="hidden" id="finLon">
 
+<p id="estadoSeleccionTramo">
+  Primero buscá una calle. Después seleccioná el inicio y el final en el mapa.
+</p>
+  <button
+  type="button"
+  onclick="activarSeleccionTramo()">
+  📍 SELECCIONAR TRAMO EN EL MAPA
+</button>
   <label>Estado del pavimento</label>
   <div class="form-options">
     <button type="button" onclick="seleccionarEstado(1,this)">😖 Malo</button>
